@@ -1,12 +1,18 @@
 package com.ngolik.authservice.service;
 
-import com.ngolik.authservice.entity.UserCredentials;
+import java.util.List;
+
+import com.ngolik.authservice.dto.UserDTO;
 
 public interface UserService {
 
-    public String generateToken(String userName);
+    List<UserDTO> getAllUsers();
 
-    public String saveUser(UserCredentials userCredentials);
+    UserDTO getUserById(Long id);
 
-    public void  validateToken(String token);
+    UserDTO createUser(UserDTO userDTO);
+
+    UserDTO updateUser(Long id, UserDTO userDTO);
+
+    public void deleteUser(Long id);
 }

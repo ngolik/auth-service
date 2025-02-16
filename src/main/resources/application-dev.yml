@@ -18,6 +18,8 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework: INFO
+    org.springframework.web: DEBUG
+    org.springframework.cloud.gateway: DEBUG
 
 spring:
   application:
@@ -47,6 +49,8 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     non-secure-port: 8081
+    prefer-ip-address: true
+    ip-address: 192.168.0.80
 
 aws:
   region: eu-west-1

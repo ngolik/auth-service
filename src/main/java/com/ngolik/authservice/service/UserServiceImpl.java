@@ -1,38 +1,70 @@
 package com.ngolik.authservice.service;
 
-import com.ngolik.authservice.entity.UserCredentials;
-import com.ngolik.authservice.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import java.util.List;
 
+import com.ngolik.authservice.dto.UserDTO;
+import com.ngolik.authservice.entity.User;
+import com.ngolik.authservice.repository.UserRepository;
+import com.ngolik.authservice.service.cognito.AuthService;
+import com.ngolik.authservice.service.exception.ResourceNotFoundException;
+import com.ngolik.authservice.service.mapper.UserMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepo userRepo;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtService jwtService;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final AuthService authService;
 
     @Override
-    public String saveUser(UserCredentials userCredentials) {
-        userCredentials.setPassword(passwordEncoder.encode(userCredentials.getPassword()));
-        userRepo.save(userCredentials);
-        //TODO
-        return "User added to system";
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+            .map(userMapper::toDto)
+            .toList();
     }
 
     @Override
-    public String generateToken(String userName) {
-        return jwtService.generateToken(userName);
+    public UserDTO getUserById(Long id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        return userMapper.toDto(user);
     }
 
+    @Transactional
     @Override
-    public void  validateToken(String token) {
-        jwtService.validateToken(token);
+    public UserDTO createUser(UserDTO userDTO) {
+        authService.inviteUser(userDTO);
+        User user = userMapper.toEntity(userDTO);
+        try {
+            user = userRepository.save(user);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return userMapper.toDto(user);
+    }
+
+    @Transactional
+    @Override
+    public UserDTO updateUser(Long id, UserDTO userDTO) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        userMapper.partialUpdate(user, userDTO);
+        user = userRepository.save(user);
+        return userMapper.toDto(user);
+    }
+
+    @Transactional
+    @Override
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        userRepository.delete(user);
     }
 }

@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main  # или твоя основная ветка
+      - main
 
 jobs:
   deploy:
@@ -67,4 +67,6 @@ jobs:
             DB_HOST=${{ env.DB_HOST }} \
             DB_NAME=${{ env.DB_NAME }} \
             DB_PORT=${{ env.DB_PORT }} \
+            set -x
+            cd /home/ubuntu/auth-service
             sudo docker-compose up -d

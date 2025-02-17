@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main  # или твоя основная ветка
+      - main
 
 jobs:
   deploy:
@@ -22,18 +22,33 @@ jobs:
       - name: Get DB Credentials from AWS Parameter Store
         run: |
           echo "Fetching DB credentials from AWS Parameter Store..."
-          echo "DB_USER=$(aws ssm get-parameter --name "/DB_USER" --with-decryption --query "Parameter.Value" --output text)" >> $GITHUB_ENV
-          echo "DB_PASS=$(aws ssm get-parameter --name "/DB_PASSWORD" --with-decryption --query "Parameter.Value" --output text)" >> $GITHUB_ENV
-          echo "DB_HOST=$(aws ssm get-parameter --name "/DB_HOST" --query "Parameter.Value" --output text)" >> $GITHUB_ENV
-          echo "DB_NAME=$(aws ssm get-parameter --name "/DB_NAME" --query "Parameter.Value" --output text)" >> $GITHUB_ENV
-          echo "DB_PORT=$(aws ssm get-parameter --name "/DB_PORT" --query "Parameter.Value" --output text)" >> $GITHUB_ENV
+          echo "DB_USER=$(aws ssm get-parameter --name '/DB_USER' --with-decryption --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
+          echo "DB_PASS=$(aws ssm get-parameter --name '/DB_PASSWORD' --with-decryption --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
+          echo "DB_HOST=$(aws ssm get-parameter --name '/DB_HOST' --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
+          echo "DB_NAME=$(aws ssm get-parameter --name '/DB_NAME' --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
+          echo "DB_PORT=$(aws ssm get-parameter --name '/DB_PORT' --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
+
+      - name: Save private key to file
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Add EC2 to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection (debug)
+        run: |
+          ssh -vvv -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} exit || true
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ~/.ssh/id_rsa
           script: |
             echo "Pulling latest images..."
             docker pull ngolik/eureka

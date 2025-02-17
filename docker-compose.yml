@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+
+  eureka:
+    image: ngolik/eureka
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+
+  api-gateway:
+    image: ngolik/api-gateway
+    container_name: api-gateway
+    depends_on:
+      - eureka
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+    ports:
+      - "8080:8080"
+
+  auth-postgres:
+    image: postgres
+    container_name: auth-service-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+
+  auth-service:
+    image: ngolik/auth-service
+    container_name: auth-service
+    depends_on:
+      auth-postgres:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+      api-gateway:
+        condition: service_started
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    ports:
+      - "8081:8081"
+
+volumes:
+  auth_db_data:

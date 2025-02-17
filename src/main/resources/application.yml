@@ -23,9 +23,9 @@ spring:
   application:
     name: AUTH-SERVICE
   datasource:
-    url: jdbc:postgresql://${DB_AUTH_HOST}:${DB_AUTH_PORT}/${DB_AUTH_NAME}
-    username: ${DB_AUTH_USER}
-    password: ${DB_AUTH_PASSWORD}
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     database: postgresql
   jpa:
@@ -37,9 +37,9 @@ spring:
   liquibase:
     change-log: classpath:/liquibase/master.xml
     enabled: true
-    url: jdbc:postgresql://${DB_AUTH_HOST}:${DB_AUTH_PORT}/${DB_AUTH_NAME}
-    user: ${DB_AUTH_USER}
-    password: ${DB_AUTH_PASSWORD}
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
 
 eureka:
   client:

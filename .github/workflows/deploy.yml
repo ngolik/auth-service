@@ -34,6 +34,10 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
+      - name: Show key file content
+        run: |
+          cat ~/.ssh/id_rsa
+
       - name: Add EC2 to known_hosts
         run: |
           mkdir -p ~/.ssh

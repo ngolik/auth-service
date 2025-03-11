@@ -76,4 +76,5 @@ jobs:
             export DB_NAME=${{ secrets.DB_NAME }}
             export DB_PORT=${{ secrets.DB_PORT }}
             cd /home/ec2-user/auth-service
-            sudo docker-compose up -d
+            sudo DB_USER=$DB_USER DB_PASS=$DB_PASS DB_HOST=$DB_HOST DB_NAME=$DB_NAME DB_PORT=$DB_PORT docker-compose up -d
+

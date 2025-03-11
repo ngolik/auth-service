@@ -31,7 +31,7 @@ jobs:
       - name: Save private key to file
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
       - name: Show key file content
@@ -53,7 +53,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ~/.ssh/id_rsa
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo "Pulling latest images..."
             docker pull ngolik/eureka
@@ -70,3 +70,8 @@ jobs:
             set -x
             cd /home/ubuntu/auth-service
             sudo docker-compose up -d
+      - name: Debug SSH Key
+        run: |
+          ls -lah ~/.ssh/
+          cat ~/.ssh/id_rsa
+          ssh-keygen -y -f ~/.ssh/id_rsa

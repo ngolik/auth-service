@@ -54,6 +54,10 @@ jobs:
           cat ~/.ssh/id_rsa
           ssh-keygen -y -f ~/.ssh/id_rsa
 
+      - name: Check SSH Private Key
+        run: |
+          ssh-keygen -y -f ~/.ssh/id_rsa || echo "Invalid SSH key!"
+
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.0
         with:

@@ -54,7 +54,13 @@ jobs:
       - name: Copy docker-compose.yml to EC2
         run: |
           scp -i ~/.ssh/id_ed25519 docker-compose.yml ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ec2-user/auth-service/docker-compose.yml
-      
+
+      - name: Build and Push auth-service Docker Image
+        run: |
+          echo "Building auth-service Docker image..."
+          docker build -t ghcr.io/ngolik/auth-service:latest .
+          echo "Pushing auth-service Docker image..."
+          docker push ghcr.io/ngolik/auth-service:latest
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.0

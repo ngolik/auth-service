@@ -42,7 +42,7 @@ jobs:
       - name: Test SSH connection with debug logs
         run: |
           echo "Testing SSH connection to EC2 with debug logs..."
-          ssh -vvv -i ~/.ssh/id_ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} exit || true
+          ssh -vvv -i ~/.ssh/id_ed25519 -o HostKeyAlgorithms=ssh-ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} exit || true
 
       - name: Check SSH Private Key
         run: |

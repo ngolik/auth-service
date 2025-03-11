@@ -70,10 +70,10 @@ jobs:
             docker pull postgres:latest
 
             echo "Running docker-compose..."
-            export DB_USER=${{ env.DB_USER }} \
-            export DB_PASS=${{ env.DB_PASS }} \
-            export DB_HOST=${{ env.DB_HOST }} \
-            export DB_NAME=${{ env.DB_NAME }} \
-            export DB_PORT=${{ env.DB_PORT }} \
+            export DB_USER=${{ secrets.DB_USER }}
+            export DB_PASS=${{ secrets.DB_PASS }}
+            export DB_HOST=${{ secrets.DB_HOST }}
+            export DB_NAME=${{ secrets.DB_NAME }}
+            export DB_PORT=${{ secrets.DB_PORT }}
             cd /home/ec2-user/auth-service
             sudo docker-compose up -d

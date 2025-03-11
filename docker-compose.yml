@@ -1,15 +1,14 @@
 version: '3.8'
 
 services:
-
   eureka:
-    image: ngolik/eureka
+    image: ghcr.io/ngolik/eureka-server:latest
     container_name: eureka-server
     ports:
       - "8761:8761"
 
   api-gateway:
-    image: ngolik/api-gateway
+    image: ghcr.io/ngolik/api-gateway:latest
     container_name: api-gateway
     depends_on:
       - eureka
@@ -37,7 +36,7 @@ services:
       start_period: 10s
 
   auth-service:
-    image: ngolik/auth-service
+    image: ghcr.io/ngolik/auth-service:latest
     container_name: auth-service
     depends_on:
       auth-postgres:

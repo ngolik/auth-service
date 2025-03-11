@@ -13,9 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
@@ -45,14 +42,10 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Test SSH connection with debug logs
+      - name: Test SSH connection
         run: |
-          echo "Testing SSH connection to EC2 with debug logs..."
-          ssh -vvv -i ~/.ssh/id_ed25519 -o HostKeyAlgorithms=ssh-ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} exit || true
-
-      - name: Check SSH Private Key
-        run: |
-          ssh-keygen -y -f ~/.ssh/id_ed25519 || echo "Invalid SSH key!"
+          echo "Testing SSH connection to EC2..."
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo 'Connection successful!'"
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.0
@@ -61,11 +54,11 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY_ED25519 }}
           script: |
-            echo "Pulling latest images..."
-            docker pull ngolik/eureka
-            docker pull ngolik/api-gateway
-            docker pull ngolik/auth-service
-            docker pull postgres
+            echo "Pulling latest Docker images..."
+            docker pull ghcr.io/ngolik/eureka-server:latest
+            docker pull ghcr.io/ngolik/api-gateway:latest
+            docker pull ghcr.io/ngolik/auth-service:latest
+            docker pull postgres:latest
 
             echo "Running docker-compose..."
             DB_USER=${{ env.DB_USER }} \
@@ -73,6 +66,5 @@ jobs:
             DB_HOST=${{ env.DB_HOST }} \
             DB_NAME=${{ env.DB_NAME }} \
             DB_PORT=${{ env.DB_PORT }} \
-            set -x
             cd /home/ubuntu/auth-service
             sudo docker-compose up -d

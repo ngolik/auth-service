@@ -47,9 +47,14 @@ jobs:
           echo "Testing SSH connection to EC2..."
           ssh -i ~/.ssh/id_ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo 'Connection successful!'"
 
+      - name: Create project directory on EC2 with proper permissions
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "sudo mkdir -p /home/ec2-user/auth-service && sudo chown -R ec2-user:ec2-user /home/ec2-user/auth-service"
+
       - name: Copy docker-compose.yml to EC2
         run: |
           scp -i ~/.ssh/id_ed25519 docker-compose.yml ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ec2-user/auth-service/docker-compose.yml
+      
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.0

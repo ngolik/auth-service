@@ -8,6 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository
@@ -74,6 +77,7 @@ jobs:
             --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             -t ghcr.io/ngolik/auth-service:latest .
           docker push ghcr.io/ngolik/auth-service:latest
+
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.0

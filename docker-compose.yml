@@ -49,6 +49,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    dns:
+      - 54.195.95.245
     ports:
       - "8081:8081"
 

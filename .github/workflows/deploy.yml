@@ -29,7 +29,7 @@ jobs:
         run: |
           echo "Fetching DB credentials from AWS Parameter Store..."
           echo "DB_USER=$(aws ssm get-parameter --name '/DB_USER' --with-decryption --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
-          echo "DB_PASS=$(aws ssm get-parameter --name '/DB_PASSWORD' --with-decryption --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
+          echo "DB_PASS=$(aws ssm get-parameter --name '/DB_PASS' --with-decryption --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
           echo "DB_HOST=$(aws ssm get-parameter --name '/DB_HOST' --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
           echo "DB_NAME=$(aws ssm get-parameter --name '/DB_NAME' --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
           echo "DB_PORT=$(aws ssm get-parameter --name '/DB_PORT' --query 'Parameter.Value' --output text)" >> $GITHUB_ENV
@@ -74,7 +74,7 @@ jobs:
             --build-arg DB_PORT=${{ secrets.DB_PORT }} \
             --build-arg DB_NAME=${{ secrets.DB_NAME }} \
             --build-arg DB_USER=${{ secrets.DB_USER }} \
-            --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            --build-arg DB_PASS=${{ secrets.DB_PASS }} \
             -t ghcr.io/ngolik/auth-service:latest .
           docker push ghcr.io/ngolik/auth-service:latest
 

@@ -1,4 +1,5 @@
 FROM openjdk:17
+RUN apt-get update && apt-get install -y iputils-ping
 WORKDIR /app
 
 ARG DB_HOST

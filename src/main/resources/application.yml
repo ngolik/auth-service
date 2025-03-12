@@ -15,9 +15,10 @@ logging:
     root: INFO
     com.softeq: DEBUG
     com.zaxxer.hikari: INFO
-    org.hibernate.SQL: DEBUG
+    org.hibernate: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework: INFO
+    org.springframework.jdbc.core: DEBUG
 
 spring:
   application:

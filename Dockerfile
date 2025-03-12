@@ -1,15 +1,13 @@
 FROM openjdk:17
-ARG JAR_FILE=target/*.jar
-ARG DB_HOST
-ARG DB_PORT
-ARG DB_NAME
-ARG DB_USER
-ARG DB_PASSWORD
-ENV DB_HOST=${DB_HOST} \
-    DB_PORT=${DB_PORT} \
-    DB_NAME=${DB_NAME} \
-    DB_USER=${DB_USER} \
-    DB_PASSWORD=${DB_PASSWORD}
-COPY ${JAR_FILE} app.jar
+WORKDIR /app
+
+ENV DB_HOST=${DB_HOST}
+ENV DB_PORT=${DB_PORT}
+ENV DB_NAME=${DB_NAME}
+ENV DB_USER=${DB_USER}
+ENV DB_PASSWORD=${DB_PASSWORD}
+
+COPY target/*.jar app.jar
+
 EXPOSE 8081
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

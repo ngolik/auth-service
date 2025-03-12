@@ -19,6 +19,7 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework: INFO
     org.springframework.jdbc.core: DEBUG
+    org.springframework.jdbc.datasource: DEBUG
 
 spring:
   application:
